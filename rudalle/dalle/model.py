@@ -2,7 +2,7 @@
 import torch
 import torch.nn.functional as F
 from einops import rearrange
-
+from torch.cuda.amp import autocast
 from .utils import exists, is_empty, init_method_normal
 from .image_attention import get_conv_mask, get_row_mask, get_col_mask
 
@@ -112,7 +112,7 @@ class DalleModel(torch.nn.Module):
                                dtype=torch.long, device=self.device) % self.image_tokens_per_dim
         col_ids = col_ids.unsqueeze(0).view(-1, input_shape[-1])
         return self.image_row_embeddings(row_ids) + self.image_col_embeddings(col_ids)
-
+    @autocast()
     def forward(
             self,
             input_ids,
